@@ -5,92 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Check, ArrowLeft, ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Textarea } from "@/components/ui/textarea";
-
-interface ModuleCardProps {
-  module: Module;
-  onStepChange: (moduleId: string, step: number) => void;
-}
-
-function ModuleCard({ module, onStepChange }: ModuleCardProps) {
-  const handlePrevious = () => {
-    if (module.currentStep > 0) {
-      onStepChange(module.id, module.currentStep - 1);
-    }
-  };
-
-  const handleNext = () => {
-    if (module.currentStep < module.steps.length - 1) {
-      onStepChange(module.id, module.currentStep + 1);
-    }
-  };
-
-  return (
-    <Card className="border shadow-sm">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-lg font-semibold">{module.title}</CardTitle>
-        <p className="text-sm text-gray-500">{module.description}</p>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex items-center gap-4">
-          {module.steps.map((step, index) => (
-            <div key={index} className="flex items-center">
-              <div
-                className={`w-6 h-6 flex items-center justify-center rounded-full border 
-                  ${step.completed ? 'bg-green-500 border-green-500' : 
-                    index === module.currentStep ? 'bg-cyan-500 border-cyan-500' : 'border-gray-300'}`}
-              >
-                {step.completed ? (
-                  <Check className="h-4 w-4 text-white" />
-                ) : (
-                  <span className={`text-xs ${index === module.currentStep ? 'text-white' : 'text-gray-500'}`}>
-                    {index + 1}
-                  </span>
-                )}
-              </div>
-              {index < module.steps.length - 1 && (
-                <div className="h-px w-8 bg-gray-200 mx-2" />
-              )}
-            </div>
-          ))}
-        </div>
-
-        {/* Show instructions for the current step */}
-        <Textarea
-          value={module.steps[module.currentStep].instructions}
-          readOnly
-          className="min-h-[100px] bg-gray-50"
-        />
-
-        <div className="flex justify-end gap-4">
-          <Button
-            variant="outline"
-            onClick={handlePrevious}
-            disabled={module.currentStep === 0}
-            size="sm"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Previous
-          </Button>
-          <Button
-            onClick={handleNext}
-            disabled={module.currentStep === module.steps.length - 1}
-            size="sm"
-            className="bg-cyan-600 hover:bg-cyan-700"
-          >
-            Next
-            <ArrowRight className="h-4 w-4 ml-2" />
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
+import ModuleCard from "@/components/ModuleCard";
 
 export default function MigrationWorkflow() {
   const [currentStep, setCurrentStep] = useState(0);
   const [modules, setModules] = useState<Module[]>([]);
-  const [location] = useLocation();
+  const [, setLocation] = useLocation();
 
   // Fetch initial modules
   const { data: initialModules } = useQuery({
@@ -125,13 +45,22 @@ export default function MigrationWorkflow() {
   };
 
   const handleModuleStepChange = (moduleId: string, step: number) => {
-    setModules(prevModules =>
-      prevModules.map(mod =>
+    setModules((prevModules) =>
+      prevModules.map((mod) =>
         mod.id === moduleId
-          ? { ...mod, currentStep: step, steps: mod.steps.map((s, i) => ({ ...s, completed: i < step })) }
-          : mod
-      )
+          ? {
+              ...mod,
+              currentStep: step,
+              steps: mod.steps.map((s, i) => ({ ...s, completed: i < step })),
+              isCompleted: step === mod.steps.length - 1,
+            }
+          : mod,
+      ),
     );
+  };
+
+  const handleCancel = () => {
+    setLocation("/");
   };
 
   return (
@@ -146,26 +75,36 @@ export default function MigrationWorkflow() {
             </CardHeader>
             <CardContent>
               {/* Migration Summary Card */}
-              {(initialModules?.migrationSummary || stepModules?.migrationSummary) && (
+              {(initialModules?.migrationSummary ||
+                stepModules?.migrationSummary) && (
                 <Card className="mb-8 bg-gray-50 border-none">
                   <CardContent className="pt-6">
                     <div className="grid grid-cols-3 gap-4">
                       <div>
-                        <p className="text-sm font-medium text-gray-500">Source Version</p>
+                        <p className="text-sm font-medium text-gray-500">
+                          Source Version
+                        </p>
                         <p className="mt-1 text-lg text-gray-900">
-                          {initialModules?.migrationSummary?.sourceVersion || stepModules?.migrationSummary?.sourceVersion}
+                          {initialModules?.migrationSummary?.sourceVersion ||
+                            stepModules?.migrationSummary?.sourceVersion}
                         </p>
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-500">Target Version</p>
+                        <p className="text-sm font-medium text-gray-500">
+                          Target Version
+                        </p>
                         <p className="mt-1 text-lg text-gray-900">
-                          {initialModules?.migrationSummary?.targetVersion || stepModules?.migrationSummary?.targetVersion}
+                          {initialModules?.migrationSummary?.targetVersion ||
+                            stepModules?.migrationSummary?.targetVersion}
                         </p>
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-500">Ticket Number</p>
+                        <p className="text-sm font-medium text-gray-500">
+                          Ticket Number
+                        </p>
                         <p className="mt-1 text-lg text-gray-900">
-                          {initialModules?.migrationSummary?.ticketNumber || stepModules?.migrationSummary?.ticketNumber}
+                          {initialModules?.migrationSummary?.ticketNumber ||
+                            stepModules?.migrationSummary?.ticketNumber}
                         </p>
                       </div>
                     </div>
@@ -180,22 +119,28 @@ export default function MigrationWorkflow() {
                       <div
                         className={`w-10 h-10 flex items-center justify-center rounded-full border-2 
                           ${currentStep > index
-                            ? 'bg-green-500 border-green-500'
+                            ? "bg-green-500 border-green-500"
                             : currentStep === index
-                              ? 'bg-cyan-500 border-cyan-500'
-                              : 'border-gray-300 bg-white'}`}
+                              ? "bg-cyan-500 border-cyan-500"
+                              : "border-gray-300 bg-white"}`}
                       >
                         {currentStep > index ? (
                           <Check className="h-6 w-6 text-white" />
                         ) : (
-                          <span className={`text-sm font-medium ${currentStep === index ? 'text-white' : 'text-gray-500'}`}>
+                          <span
+                            className={`text-sm font-medium ${currentStep === index ? "text-white" : "text-gray-500"}`}
+                          >
                             {step.id}
                           </span>
                         )}
                       </div>
-                      <span className={`mt-2 text-sm font-medium ${
-                        currentStep === index ? 'text-cyan-900' : 'text-gray-500'
-                      }`}>
+                      <span
+                        className={`mt-2 text-sm font-medium ${
+                          currentStep === index
+                            ? "text-cyan-900"
+                            : "text-gray-500"
+                        }`}
+                      >
                         {step.name}
                       </span>
                     </div>
@@ -236,14 +181,29 @@ export default function MigrationWorkflow() {
               <ArrowLeft className="h-4 w-4" />
               Previous Step
             </Button>
-            <Button
-              onClick={handleNext}
-              disabled={currentStep === MIGRATION_STEPS.length - 1}
-              className="flex items-center gap-2 bg-cyan-600 hover:bg-cyan-700"
-            >
-              Next Step
-              <ArrowRight className="h-4 w-4" />
-            </Button>
+            <div className="flex gap-4">
+              <Button
+                variant="outline"
+                onClick={handleCancel}
+                className="flex items-center gap-2"
+              >
+                Cancel Workflow
+              </Button>
+              <Button
+                onClick={handleNext}
+                disabled={currentStep === MIGRATION_STEPS.length - 1 && !modules.every(m => m.isCompleted)}
+                className="flex items-center gap-2 bg-cyan-600 hover:bg-cyan-700"
+              >
+                {currentStep === MIGRATION_STEPS.length - 1 ? (
+                  "Finish"
+                ) : (
+                  <>
+                    Next Step
+                    <ArrowRight className="h-4 w-4" />
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
         </div>
       </div>

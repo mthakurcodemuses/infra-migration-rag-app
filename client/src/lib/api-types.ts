@@ -49,6 +49,7 @@ export interface Module {
   description: string;
   steps: ModuleStep[];
   currentStep: number;
+  isCompleted: boolean;
 }
 
 export interface StepModulesResponse {

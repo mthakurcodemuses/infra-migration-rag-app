@@ -20,7 +20,9 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 
 export default function Home() {
-  const [migrationPlan, setMigrationPlan] = useState<MigrationPlanData | null>(null);
+  const [migrationPlan, setMigrationPlan] = useState<MigrationPlanData | null>(
+    null,
+  );
   const { toast } = useToast();
   const [, setLocation] = useLocation();
 
@@ -74,7 +76,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto space-y-6">
           <Card className="border-none shadow-lg">
@@ -108,7 +110,10 @@ export default function Home() {
                           <FormItem>
                             <FormLabel>Base Layer Terraform Repo URL</FormLabel>
                             <FormControl>
-                              <Input {...field} placeholder="Enter repository URL" />
+                              <Input
+                                {...field}
+                                placeholder="Enter repository URL"
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -122,7 +127,10 @@ export default function Home() {
                           <FormItem>
                             <FormLabel>Data Layer Terraform Repo URL</FormLabel>
                             <FormControl>
-                              <Input {...field} placeholder="Enter repository URL" />
+                              <Input
+                                {...field}
+                                placeholder="Enter repository URL"
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -134,9 +142,14 @@ export default function Home() {
                         name="integrationLayerRepoUrl"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Integration Layer Terraform Repo URL</FormLabel>
+                            <FormLabel>
+                              Integration Layer Terraform Repo URL
+                            </FormLabel>
                             <FormControl>
-                              <Input {...field} placeholder="Enter repository URL" />
+                              <Input
+                                {...field}
+                                placeholder="Enter repository URL"
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>

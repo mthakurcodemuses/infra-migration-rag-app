@@ -29,6 +29,7 @@ export function registerRoutes(app: Express): Server {
           title: "Core Infrastructure",
           description: "Setup and configure core infrastructure components",
           currentStep: 0,
+          isCompleted: false,
           steps: [
             { 
               name: "VPC Setup", 
@@ -52,6 +53,7 @@ export function registerRoutes(app: Express): Server {
           title: "Cluster Configuration",
           description: "Configure EKS cluster settings and components",
           currentStep: 0,
+          isCompleted: false,
           steps: [
             { 
               name: "Node Groups", 
@@ -87,6 +89,7 @@ export function registerRoutes(app: Express): Server {
             title: "Data Storage",
             description: "Configure data persistence and storage solutions",
             currentStep: 0,
+            isCompleted: false,
             steps: [
               { 
                 name: "Volume Setup", 
@@ -105,6 +108,30 @@ export function registerRoutes(app: Express): Server {
               },
             ],
           },
+          {
+            id: "data-lifecycle",
+            title: "Data Lifecycle Management",
+            description: "Configure data retention and lifecycle policies",
+            currentStep: 0,
+            isCompleted: false,
+            steps: [
+              { 
+                name: "Retention Policies", 
+                completed: false,
+                instructions: "Set up retention:\n1. Define retention periods\n2. Configure archival rules\n3. Set up cleanup jobs"
+              },
+              { 
+                name: "Backup Schedules", 
+                completed: false,
+                instructions: "Configure backups:\n1. Set up backup schedule\n2. Configure retention periods\n3. Test restore procedures"
+              },
+              { 
+                name: "Monitoring", 
+                completed: false,
+                instructions: "Set up monitoring:\n1. Configure alerts\n2. Set up dashboards\n3. Define SLAs"
+              },
+            ],
+          },
         ],
       },
       3: {
@@ -114,6 +141,7 @@ export function registerRoutes(app: Express): Server {
             title: "Integration Setup",
             description: "Configure integration components and services",
             currentStep: 0,
+            isCompleted: false,
             steps: [
               { 
                 name: "Service Mesh", 
@@ -129,6 +157,30 @@ export function registerRoutes(app: Express): Server {
                 name: "External Services", 
                 completed: false,
                 instructions: "Configure external services:\n1. Set up endpoints\n2. Configure authentication\n3. Set up monitoring"
+              },
+            ],
+          },
+          {
+            id: "security-integration",
+            title: "Security Integration",
+            description: "Configure security components and policies",
+            currentStep: 0,
+            isCompleted: false,
+            steps: [
+              { 
+                name: "IAM Setup", 
+                completed: false,
+                instructions: "Configure IAM:\n1. Set up roles\n2. Configure policies\n3. Set up service accounts"
+              },
+              { 
+                name: "Security Policies", 
+                completed: false,
+                instructions: "Set up policies:\n1. Configure network policies\n2. Set up RBAC\n3. Configure audit logging"
+              },
+              { 
+                name: "Compliance", 
+                completed: false,
+                instructions: "Configure compliance:\n1. Set up compliance checks\n2. Configure reporting\n3. Set up alerts"
               },
             ],
           },
