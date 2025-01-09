@@ -38,7 +38,7 @@ function ModuleCard({ module, onStepChange }: ModuleCardProps) {
               <div
                 className={`w-6 h-6 flex items-center justify-center rounded-full border 
                   ${step.completed ? 'bg-green-500 border-green-500' : 
-                    index === module.currentStep ? 'bg-amber-500 border-amber-500' : 'border-gray-300'}`}
+                    index === module.currentStep ? 'bg-cyan-500 border-cyan-500' : 'border-gray-300'}`}
               >
                 {step.completed ? (
                   <Check className="h-4 w-4 text-white" />
@@ -76,7 +76,7 @@ function ModuleCard({ module, onStepChange }: ModuleCardProps) {
             onClick={handleNext}
             disabled={module.currentStep === module.steps.length - 1}
             size="sm"
-            className="bg-amber-600 hover:bg-amber-700"
+            className="bg-cyan-600 hover:bg-cyan-700"
           >
             Next
             <ArrowRight className="h-4 w-4 ml-2" />
@@ -125,9 +125,9 @@ export default function MigrationWorkflow() {
   };
 
   const handleModuleStepChange = (moduleId: string, step: number) => {
-    setModules(prevModules => 
-      prevModules.map(mod => 
-        mod.id === moduleId 
+    setModules(prevModules =>
+      prevModules.map(mod =>
+        mod.id === moduleId
           ? { ...mod, currentStep: step, steps: mod.steps.map((s, i) => ({ ...s, completed: i < step })) }
           : mod
       )
@@ -135,12 +135,12 @@ export default function MigrationWorkflow() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-cyan-50 to-white">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
           <Card className="border-none shadow-lg mb-8">
             <CardHeader>
-              <CardTitle className="text-2xl text-amber-900">
+              <CardTitle className="text-2xl text-cyan-900">
                 EKS Blueprint Migration Workflow
               </CardTitle>
             </CardHeader>
@@ -182,7 +182,7 @@ export default function MigrationWorkflow() {
                           ${currentStep > index
                             ? 'bg-green-500 border-green-500'
                             : currentStep === index
-                              ? 'bg-amber-500 border-amber-500'
+                              ? 'bg-cyan-500 border-cyan-500'
                               : 'border-gray-300 bg-white'}`}
                       >
                         {currentStep > index ? (
@@ -194,7 +194,7 @@ export default function MigrationWorkflow() {
                         )}
                       </div>
                       <span className={`mt-2 text-sm font-medium ${
-                        currentStep === index ? 'text-amber-900' : 'text-gray-500'
+                        currentStep === index ? 'text-cyan-900' : 'text-gray-500'
                       }`}>
                         {step.name}
                       </span>
@@ -214,8 +214,8 @@ export default function MigrationWorkflow() {
                   <h3 className="text-lg font-medium text-gray-700">Modules</h3>
                   <div className="grid gap-4">
                     {modules.map((module) => (
-                      <ModuleCard 
-                        key={module.id} 
+                      <ModuleCard
+                        key={module.id}
                         module={module}
                         onStepChange={handleModuleStepChange}
                       />
@@ -239,7 +239,7 @@ export default function MigrationWorkflow() {
             <Button
               onClick={handleNext}
               disabled={currentStep === MIGRATION_STEPS.length - 1}
-              className="flex items-center gap-2 bg-amber-600 hover:bg-amber-700"
+              className="flex items-center gap-2 bg-cyan-600 hover:bg-cyan-700"
             >
               Next Step
               <ArrowRight className="h-4 w-4" />
