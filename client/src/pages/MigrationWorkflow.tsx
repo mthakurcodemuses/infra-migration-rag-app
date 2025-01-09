@@ -55,8 +55,9 @@ function ModuleCard({ module, onStepChange }: ModuleCardProps) {
           ))}
         </div>
 
+        {/* Show instructions for the current step */}
         <Textarea
-          value={module.instructions}
+          value={module.steps[module.currentStep].instructions}
           readOnly
           className="min-h-[100px] bg-gray-50"
         />
@@ -144,6 +145,34 @@ export default function MigrationWorkflow() {
               </CardTitle>
             </CardHeader>
             <CardContent>
+              {/* Migration Summary Card */}
+              {(initialModules?.migrationSummary || stepModules?.migrationSummary) && (
+                <Card className="mb-8 bg-gray-50 border-none">
+                  <CardContent className="pt-6">
+                    <div className="grid grid-cols-3 gap-4">
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">Source Version</p>
+                        <p className="mt-1 text-lg text-gray-900">
+                          {initialModules?.migrationSummary?.sourceVersion || stepModules?.migrationSummary?.sourceVersion}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">Target Version</p>
+                        <p className="mt-1 text-lg text-gray-900">
+                          {initialModules?.migrationSummary?.targetVersion || stepModules?.migrationSummary?.targetVersion}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">Ticket Number</p>
+                        <p className="mt-1 text-lg text-gray-900">
+                          {initialModules?.migrationSummary?.ticketNumber || stepModules?.migrationSummary?.ticketNumber}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
               <div className="flex justify-center items-center gap-4 mb-8">
                 {MIGRATION_STEPS.map((step, index) => (
                   <div key={step.id} className="flex items-center">

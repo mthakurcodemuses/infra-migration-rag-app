@@ -40,6 +40,7 @@ export const MIGRATION_STEPS = [
 export interface ModuleStep {
   name: string;
   completed: boolean;
+  instructions: string;
 }
 
 export interface Module {
@@ -48,9 +49,13 @@ export interface Module {
   description: string;
   steps: ModuleStep[];
   currentStep: number;
-  instructions: string;
 }
 
 export interface StepModulesResponse {
   modules: Module[];
+  migrationSummary?: {
+    sourceVersion: string;
+    targetVersion: string;
+    ticketNumber: string;
+  };
 }

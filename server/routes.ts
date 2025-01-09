@@ -6,7 +6,6 @@ export function registerRoutes(app: Express): Server {
   app.post("/api/migration/plan", (req, res) => {
     const { sourceVersion, targetVersion } = req.body;
 
-    // Mock response - in production this would call actual migration planning logic
     const migrationPlan: MigrationPlanData = {
       sourceVersion,
       targetVersion,
@@ -17,19 +16,35 @@ export function registerRoutes(app: Express): Server {
   });
 
   app.post("/api/migration/proceed", (req, res) => {
-    // Mock response with initial modules for the first step
+    // Mock response with initial modules and migration summary
     const response: StepModulesResponse = {
+      migrationSummary: {
+        sourceVersion: req.body.sourceVersion,
+        targetVersion: req.body.targetVersion,
+        ticketNumber: "MIG-2024-001", // Mock ticket number
+      },
       modules: [
         {
           id: "core-infra",
           title: "Core Infrastructure",
           description: "Setup and configure core infrastructure components",
           currentStep: 0,
-          instructions: "Follow these steps to set up the core infrastructure:\n1. Configure VPC settings\n2. Set up networking\n3. Configure security groups",
           steps: [
-            { name: "VPC Setup", completed: false },
-            { name: "Network Config", completed: false },
-            { name: "Security Groups", completed: false },
+            { 
+              name: "VPC Setup", 
+              completed: false,
+              instructions: "Configure VPC settings:\n1. Update CIDR blocks\n2. Configure subnets\n3. Set up routing tables"
+            },
+            { 
+              name: "Network Config", 
+              completed: false,
+              instructions: "Set up networking:\n1. Configure NAT gateways\n2. Set up internet gateways\n3. Configure route tables"
+            },
+            { 
+              name: "Security Groups", 
+              completed: false,
+              instructions: "Configure security:\n1. Define security group rules\n2. Set up NACL policies\n3. Review network policies"
+            },
           ],
         },
         {
@@ -37,11 +52,22 @@ export function registerRoutes(app: Express): Server {
           title: "Cluster Configuration",
           description: "Configure EKS cluster settings and components",
           currentStep: 0,
-          instructions: "Configure the EKS cluster with these steps:\n1. Set up node groups\n2. Install required add-ons\n3. Configure monitoring",
           steps: [
-            { name: "Node Groups", completed: false },
-            { name: "Add-ons", completed: false },
-            { name: "Monitoring", completed: false },
+            { 
+              name: "Node Groups", 
+              completed: false,
+              instructions: "Set up node groups:\n1. Define instance types\n2. Configure auto-scaling\n3. Set up node labels"
+            },
+            { 
+              name: "Add-ons", 
+              completed: false,
+              instructions: "Install add-ons:\n1. Configure CNI plugin\n2. Set up CoreDNS\n3. Install metrics server"
+            },
+            { 
+              name: "Monitoring", 
+              completed: false,
+              instructions: "Configure monitoring:\n1. Set up Prometheus\n2. Configure Grafana\n3. Set up alerts"
+            },
           ],
         },
       ],
@@ -53,7 +79,6 @@ export function registerRoutes(app: Express): Server {
   app.get("/api/migration/step/:stepId/modules", (req, res) => {
     const stepId = parseInt(req.params.stepId);
 
-    // Mock different modules for each step
     const modulesByStep: Record<number, StepModulesResponse> = {
       2: {
         modules: [
@@ -62,11 +87,22 @@ export function registerRoutes(app: Express): Server {
             title: "Data Storage",
             description: "Configure data persistence and storage solutions",
             currentStep: 0,
-            instructions: "Set up data storage components:\n1. Configure EBS volumes\n2. Set up EFS if needed\n3. Configure backup policies",
             steps: [
-              { name: "Volume Setup", completed: false },
-              { name: "Storage Class", completed: false },
-              { name: "Backup Config", completed: false },
+              { 
+                name: "Volume Setup", 
+                completed: false,
+                instructions: "Set up volumes:\n1. Configure EBS settings\n2. Set up volume types\n3. Configure encryption"
+              },
+              { 
+                name: "Storage Class", 
+                completed: false,
+                instructions: "Configure storage classes:\n1. Define storage classes\n2. Set up parameters\n3. Configure provisioners"
+              },
+              { 
+                name: "Backup Config", 
+                completed: false,
+                instructions: "Set up backups:\n1. Configure backup policies\n2. Set up retention\n3. Test recovery"
+              },
             ],
           },
         ],
@@ -78,11 +114,22 @@ export function registerRoutes(app: Express): Server {
             title: "Integration Setup",
             description: "Configure integration components and services",
             currentStep: 0,
-            instructions: "Set up integration components:\n1. Configure service mesh\n2. Set up API gateway\n3. Configure external services",
             steps: [
-              { name: "Service Mesh", completed: false },
-              { name: "API Gateway", completed: false },
-              { name: "External Services", completed: false },
+              { 
+                name: "Service Mesh", 
+                completed: false,
+                instructions: "Set up service mesh:\n1. Install Istio\n2. Configure sidecars\n3. Set up routing"
+              },
+              { 
+                name: "API Gateway", 
+                completed: false,
+                instructions: "Configure API gateway:\n1. Set up routes\n2. Configure SSL\n3. Set up rate limiting"
+              },
+              { 
+                name: "External Services", 
+                completed: false,
+                instructions: "Configure external services:\n1. Set up endpoints\n2. Configure authentication\n3. Set up monitoring"
+              },
             ],
           },
         ],
