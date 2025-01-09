@@ -36,3 +36,21 @@ export const MIGRATION_STEPS = [
   { id: 2, name: 'Data Blueprint Layer Migration', completed: false },
   { id: 3, name: 'Integration Blueprint Layer Migration', completed: false },
 ];
+
+export interface ModuleStep {
+  name: string;
+  completed: boolean;
+}
+
+export interface Module {
+  id: string;
+  title: string;
+  description: string;
+  steps: ModuleStep[];
+  currentStep: number;
+  instructions: string;
+}
+
+export interface StepModulesResponse {
+  modules: Module[];
+}

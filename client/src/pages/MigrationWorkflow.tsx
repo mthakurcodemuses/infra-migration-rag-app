@@ -1,42 +1,85 @@
 import { useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MIGRATION_STEPS } from "@/lib/api-types";
+import { MIGRATION_STEPS, type Module } from "@/lib/api-types";
 import { Button } from "@/components/ui/button";
 import { Check, ArrowLeft, ArrowRight } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { Textarea } from "@/components/ui/textarea";
 
 interface ModuleCardProps {
-  title: string;
-  description: string;
-  steps: { name: string; completed: boolean }[];
+  module: Module;
+  onStepChange: (moduleId: string, step: number) => void;
 }
 
-function ModuleCard({ title, description, steps }: ModuleCardProps) {
+function ModuleCard({ module, onStepChange }: ModuleCardProps) {
+  const handlePrevious = () => {
+    if (module.currentStep > 0) {
+      onStepChange(module.id, module.currentStep - 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (module.currentStep < module.steps.length - 1) {
+      onStepChange(module.id, module.currentStep + 1);
+    }
+  };
+
   return (
     <Card className="border shadow-sm">
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg font-semibold">{title}</CardTitle>
-        <p className="text-sm text-gray-500">{description}</p>
+        <CardTitle className="text-lg font-semibold">{module.title}</CardTitle>
+        <p className="text-sm text-gray-500">{module.description}</p>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-4">
         <div className="flex items-center gap-4">
-          {steps.map((step, index) => (
+          {module.steps.map((step, index) => (
             <div key={index} className="flex items-center">
               <div
                 className={`w-6 h-6 flex items-center justify-center rounded-full border 
-                  ${step.completed ? 'bg-green-500 border-green-500' : 'border-gray-300'}`}
+                  ${step.completed ? 'bg-green-500 border-green-500' : 
+                    index === module.currentStep ? 'bg-amber-500 border-amber-500' : 'border-gray-300'}`}
               >
                 {step.completed ? (
                   <Check className="h-4 w-4 text-white" />
                 ) : (
-                  <span className="text-xs text-gray-500">{index + 1}</span>
+                  <span className={`text-xs ${index === module.currentStep ? 'text-white' : 'text-gray-500'}`}>
+                    {index + 1}
+                  </span>
                 )}
               </div>
-              {index < steps.length - 1 && (
+              {index < module.steps.length - 1 && (
                 <div className="h-px w-8 bg-gray-200 mx-2" />
               )}
             </div>
           ))}
+        </div>
+
+        <Textarea
+          value={module.instructions}
+          readOnly
+          className="min-h-[100px] bg-gray-50"
+        />
+
+        <div className="flex justify-end gap-4">
+          <Button
+            variant="outline"
+            onClick={handlePrevious}
+            disabled={module.currentStep === 0}
+            size="sm"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Previous
+          </Button>
+          <Button
+            onClick={handleNext}
+            disabled={module.currentStep === module.steps.length - 1}
+            size="sm"
+            className="bg-amber-600 hover:bg-amber-700"
+          >
+            Next
+            <ArrowRight className="h-4 w-4 ml-2" />
+          </Button>
         </div>
       </CardContent>
     </Card>
@@ -45,38 +88,28 @@ function ModuleCard({ title, description, steps }: ModuleCardProps) {
 
 export default function MigrationWorkflow() {
   const [currentStep, setCurrentStep] = useState(0);
+  const [modules, setModules] = useState<Module[]>([]);
   const [location] = useLocation();
 
-  // Mock module data for demonstration
-  const modules = [
-    {
-      title: "Core Infrastructure",
-      description: "Setup and configure core infrastructure components",
-      steps: [
-        { name: "VPC Setup", completed: true },
-        { name: "Network Config", completed: false },
-        { name: "Security Groups", completed: false },
-      ],
-    },
-    {
-      title: "Cluster Configuration",
-      description: "Configure EKS cluster settings and components",
-      steps: [
-        { name: "Node Groups", completed: false },
-        { name: "Add-ons", completed: false },
-        { name: "Monitoring", completed: false },
-      ],
-    },
-    {
-      title: "Blueprint Integration",
-      description: "Integrate with existing blueprint components",
-      steps: [
-        { name: "Dependencies", completed: false },
-        { name: "Configuration", completed: false },
-        { name: "Validation", completed: false },
-      ],
-    },
-  ];
+  // Fetch initial modules
+  const { data: initialModules } = useQuery({
+    queryKey: ["/api/migration/proceed"],
+    enabled: currentStep === 0,
+  });
+
+  // Fetch modules for other steps
+  const { data: stepModules } = useQuery({
+    queryKey: [`/api/migration/step/${currentStep + 1}/modules`],
+    enabled: currentStep > 0,
+  });
+
+  useEffect(() => {
+    if (currentStep === 0 && initialModules?.modules) {
+      setModules(initialModules.modules);
+    } else if (currentStep > 0 && stepModules?.modules) {
+      setModules(stepModules.modules);
+    }
+  }, [currentStep, initialModules, stepModules]);
 
   const handleNext = () => {
     if (currentStep < MIGRATION_STEPS.length - 1) {
@@ -88,6 +121,16 @@ export default function MigrationWorkflow() {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
+  };
+
+  const handleModuleStepChange = (moduleId: string, step: number) => {
+    setModules(prevModules => 
+      prevModules.map(mod => 
+        mod.id === moduleId 
+          ? { ...mod, currentStep: step, steps: mod.steps.map((s, i) => ({ ...s, completed: i < step })) }
+          : mod
+      )
+    );
   };
 
   return (
@@ -141,8 +184,12 @@ export default function MigrationWorkflow() {
                 <div className="space-y-4">
                   <h3 className="text-lg font-medium text-gray-700">Modules</h3>
                   <div className="grid gap-4">
-                    {modules.map((module, index) => (
-                      <ModuleCard key={index} {...module} />
+                    {modules.map((module) => (
+                      <ModuleCard 
+                        key={module.id} 
+                        module={module}
+                        onStepChange={handleModuleStepChange}
+                      />
                     ))}
                   </div>
                 </div>
