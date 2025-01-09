@@ -2,11 +2,13 @@ import { Switch, Route } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertCircle } from "lucide-react";
 import Home from "./pages/Home";
+import MigrationWorkflow from "./pages/MigrationWorkflow";
 
 function App() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/migration-workflow" component={MigrationWorkflow} />
       <Route component={NotFound} />
     </Switch>
   );
