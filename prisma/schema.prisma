@@ -15,3 +15,40 @@ model User {
   username String   @unique
   password String
 }
+
+model Migration {
+  id            Int      @id @default(autoincrement())
+  sourceVersion String
+  targetVersion String
+  ticketNumber  String   @unique
+  status        String   @default("in_progress") // in_progress, completed, failed
+  currentStep   Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  modules       Module[]
+}
+
+model Module {
+  id           Int        @id @default(autoincrement())
+  migrationId  Int
+  migration    Migration  @relation(fields: [migrationId], references: [id])
+  moduleId     String     // core-infra, cluster-config, etc.
+  title        String
+  description  String
+  currentStep  Int        @default(0)
+  isCompleted  Boolean    @default(false)
+  steps        Step[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model Step {
+  id          Int      @id @default(autoincrement())
+  moduleId    Int
+  module      Module   @relation(fields: [moduleId], references: [id])
+  name        String
+  instructions String
+  completed   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
