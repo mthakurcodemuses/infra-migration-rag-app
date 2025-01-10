@@ -24,6 +24,8 @@ export default function MigrationWorkflow() {
     enabled: currentStep > 0,
   });
 
+  const migrationSummary = initialModules?.migrationSummary || stepModules?.migrationSummary;
+
   useEffect(() => {
     if (currentStep === 0 && initialModules?.modules) {
       setModules(initialModules.modules);
@@ -63,6 +65,9 @@ export default function MigrationWorkflow() {
     navigate("/");
   };
 
+  const isLastStep = currentStep === MIGRATION_STEPS.length - 1;
+  const areAllModulesComplete = modules.every((m) => m.isCompleted);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-cyan-50 to-white">
       <div className="container mx-auto px-4 py-8">
@@ -75,8 +80,7 @@ export default function MigrationWorkflow() {
             </CardHeader>
             <CardContent>
               {/* Migration Summary Card */}
-              {(initialModules?.migrationSummary ||
-                stepModules?.migrationSummary) && (
+              {migrationSummary && (
                 <Card className="mb-8 bg-gray-50 border-none">
                   <CardContent className="pt-6">
                     <div className="grid grid-cols-3 gap-4">
@@ -85,8 +89,7 @@ export default function MigrationWorkflow() {
                           Source Version
                         </p>
                         <p className="mt-1 text-lg text-gray-900">
-                          {initialModules?.migrationSummary?.sourceVersion ||
-                            stepModules?.migrationSummary?.sourceVersion}
+                          {migrationSummary.sourceVersion}
                         </p>
                       </div>
                       <div>
@@ -94,8 +97,7 @@ export default function MigrationWorkflow() {
                           Target Version
                         </p>
                         <p className="mt-1 text-lg text-gray-900">
-                          {initialModules?.migrationSummary?.targetVersion ||
-                            stepModules?.migrationSummary?.targetVersion}
+                          {migrationSummary.targetVersion}
                         </p>
                       </div>
                       <div>
@@ -103,8 +105,7 @@ export default function MigrationWorkflow() {
                           Ticket Number
                         </p>
                         <p className="mt-1 text-lg text-gray-900">
-                          {initialModules?.migrationSummary?.ticketNumber ||
-                            stepModules?.migrationSummary?.ticketNumber}
+                          {migrationSummary.ticketNumber}
                         </p>
                       </div>
                     </div>
@@ -191,10 +192,10 @@ export default function MigrationWorkflow() {
               </Button>
               <Button
                 onClick={handleNext}
-                disabled={currentStep === MIGRATION_STEPS.length - 1 && !modules.every(m => m.isCompleted)}
+                disabled={isLastStep ? !areAllModulesComplete : false}
                 className="flex items-center gap-2 bg-cyan-600 hover:bg-cyan-700"
               >
-                {currentStep === MIGRATION_STEPS.length - 1 ? (
+                {isLastStep ? (
                   "Finish"
                 ) : (
                   <>
