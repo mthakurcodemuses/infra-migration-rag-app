@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import type { MigrationPlanData, StepModulesResponse } from "../client/src/lib/api-types";
+import { prisma } from './prisma';
 
 export function registerRoutes(app: Express): Server {
   app.post("/api/migration/plan", (req, res) => {
@@ -128,7 +129,7 @@ export function registerRoutes(app: Express): Server {
               { 
                 name: "Monitoring", 
                 completed: false,
-                instructions: "Set up monitoring:\n1. Configure alerts\n2. Set up dashboards\n3. Define SLAs"
+                instructions: "Configure monitoring:\n1. Configure alerts\n2. Set up dashboards\n3. Define SLAs"
               },
             ],
           },
