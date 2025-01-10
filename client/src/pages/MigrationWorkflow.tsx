@@ -1,4 +1,4 @@
-import { useLocation } from "wouter";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MIGRATION_STEPS, type Module } from "@/lib/api-types";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,7 @@ import ModuleCard from "@/components/ModuleCard";
 export default function MigrationWorkflow() {
   const [currentStep, setCurrentStep] = useState(0);
   const [modules, setModules] = useState<Module[]>([]);
-  const [, setLocation] = useLocation();
+  const navigate = useNavigate();
 
   // Fetch initial modules
   const { data: initialModules } = useQuery({
@@ -60,7 +60,7 @@ export default function MigrationWorkflow() {
   };
 
   const handleCancel = () => {
-    setLocation("/");
+    navigate("/");
   };
 
   return (

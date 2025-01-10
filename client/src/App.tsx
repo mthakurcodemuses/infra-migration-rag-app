@@ -1,4 +1,4 @@
-import { Switch, Route } from "wouter";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertCircle } from "lucide-react";
 import Home from "./pages/Home";
@@ -6,14 +6,17 @@ import MigrationWorkflow from "./pages/MigrationWorkflow";
 
 function App() {
   return (
-    <Switch>
-      <Route path="/" component={Home} />
-      <Route path="/migration-workflow" component={MigrationWorkflow} />
-      <Route component={NotFound} />
-    </Switch>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/migration-workflow" element={<MigrationWorkflow />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
+// fallback 404 not found page
 function NotFound() {
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-gray-50">

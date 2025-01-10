@@ -14,7 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useLocation } from "wouter";
+import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
@@ -24,7 +24,7 @@ export default function Home() {
     null,
   );
   const { toast } = useToast();
-  const [, setLocation] = useLocation();
+  const navigate = useNavigate();
 
   const form = useForm<MigrationFormData>({
     defaultValues: {
@@ -55,7 +55,7 @@ export default function Home() {
         title: "Success",
         description: "Proceeding with migration workflow",
       });
-      setLocation("/migration-workflow");
+      navigate("/migration-workflow");
     },
     onError: () => {
       toast({
