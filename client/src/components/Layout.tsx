@@ -1,4 +1,4 @@
-import { SiAmazoneks, SiAmazonecs } from "react-icons/si";
+import { SiAwselasticcontainerservice, SiAmazoneks } from "react-icons/si";
 import { MonitorIcon } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import {
@@ -44,7 +44,7 @@ export function Layout({ children }: LayoutProps) {
                   isActive={location.pathname === "/ecs-migration"}
                 >
                   <Link to="/ecs-migration">
-                    <SiAmazonecs className="shrink-0" />
+                    <SiAwselasticcontainerservice className="shrink-0" />
                     <span>ECS Migration</span>
                   </Link>
                 </SidebarMenuButton>
