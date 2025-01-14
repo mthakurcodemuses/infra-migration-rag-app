@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import type { MigrationPlanData, StepModulesResponse } from "../client/src/lib/api-types";
+import { prisma } from './prisma';
 
 export function registerRoutes(app: Express): Server {
   app.post("/api/migration/plan", (req, res) => {
