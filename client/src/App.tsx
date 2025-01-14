@@ -1,14 +1,21 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertCircle } from "lucide-react";
 import Home from "./pages/Home";
+import EKSMigration from "./pages/EKSMigration";
+import ECSMigration from "./pages/ECSMigration";
+import MonitorBoot from "./pages/MonitorBoot";
 import MigrationWorkflow from "./pages/MigrationWorkflow";
+import MainLayout from "./components/MainLayout";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<MainLayout><Home /></MainLayout>} />
+        <Route path="/eks-migration" element={<MainLayout><EKSMigration /></MainLayout>} />
+        <Route path="/ecs-migration" element={<MainLayout><ECSMigration /></MainLayout>} />
+        <Route path="/monitor-boot" element={<MainLayout><MonitorBoot /></MainLayout>} />
         <Route path="/migration-workflow" element={<MigrationWorkflow />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
