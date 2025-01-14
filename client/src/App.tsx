@@ -1,18 +1,18 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertCircle } from "lucide-react";
 import { Layout } from "./components/Layout";
-import Home from "./pages/Home";
+import MigrationWorkflow from "./pages/MigrationWorkflow";
 
 function App() {
   return (
     <BrowserRouter>
       <Layout>
         <Routes>
-          <Route path="/eks-migration" element={<Home />} />
+          <Route path="/" element={<Navigate to="/eks-migration" replace />} />
+          <Route path="/eks-migration" element={<MigrationWorkflow />} />
           <Route path="/ecs-migration" element={<ComingSoon />} />
           <Route path="/monito-boot" element={<ComingSoon />} />
-          <Route path="/" element={<ComingSoon />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Layout>
