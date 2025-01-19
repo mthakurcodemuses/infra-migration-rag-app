@@ -99,13 +99,30 @@ export default function MigrationWorkflow() {
                 <h2 className="text-lg font-semibold text-gray-900">Migration Steps:</h2>
                 <div className="space-y-3">
                   {stepData?.steps.map((step) => (
-                    <div key={step.id} className="flex items-start gap-3 p-3 bg-white rounded-lg border">
+                    <div 
+                      key={step.id} 
+                      className={`flex items-start gap-3 p-3 rounded-lg border ${
+                        !step.completed && stepData.overallStatus === 'error' 
+                          ? 'bg-red-50 border-red-200' 
+                          : 'bg-white'
+                      }`}
+                    >
                       <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center ${
-                        step.completed ? 'bg-green-500' : 'bg-gray-200'
+                        step.completed 
+                          ? 'bg-green-500' 
+                          : stepData.overallStatus === 'error'
+                            ? 'bg-red-500'
+                            : 'bg-gray-200'
                       }`}>
                         <span className="text-white text-sm">{step.id}</span>
                       </div>
-                      <p className="text-gray-700">{step.description}</p>
+                      <p className={`text-gray-700 ${
+                        !step.completed && stepData.overallStatus === 'error' 
+                          ? 'text-red-700' 
+                          : ''
+                      }`}>
+                        {step.description}
+                      </p>
                     </div>
                   ))}
                 </div>
@@ -121,7 +138,13 @@ export default function MigrationWorkflow() {
                       ) : stepData.overallStatus === 'error' ? (
                         <AlertCircle className="h-6 w-6 text-red-500 flex-shrink-0" />
                       ) : null}
-                      <p className="text-gray-700">{stepData.statusMessage}</p>
+                      <p className={`${
+                        stepData.overallStatus === 'error' 
+                          ? 'text-red-700' 
+                          : 'text-gray-700'
+                      }`}>
+                        {stepData.statusMessage}
+                      </p>
                     </div>
                     <div className="mt-4">
                       <Button
@@ -133,22 +156,6 @@ export default function MigrationWorkflow() {
                     </div>
                   </CardContent>
                 </Card>
-              )}
-
-              {/* Modules Section (Preserved from original, but adapted) */}
-              {stepData && (
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium text-gray-700">Modules</h3>
-                  <div className="grid gap-4">
-                    {stepData.modules.map((module) => (
-                      <ModuleCard
-                        key={module.id}
-                        module={module}
-                        onStepChange={() => {}} // Placeholder, needs actual implementation
-                      />
-                    ))}
-                  </div>
-                </div>
               )}
             </CardContent>
           </Card>
@@ -173,7 +180,7 @@ export default function MigrationWorkflow() {
               </Button>
               <Button
                 onClick={handleNext}
-                disabled={stepData?.overallStatus === 'error' || currentStep === 3}
+                disabled={currentStep === 3}
                 className="flex items-center gap-2 bg-cyan-600 hover:bg-cyan-700"
               >
                 {currentStep === 3 ? (
