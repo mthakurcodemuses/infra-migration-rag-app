@@ -33,11 +33,11 @@ export function registerRoutes(app: Express): Server {
         { 
           id: 3, 
           description: "Apply open rewrite recipe (eks-microservices) to migrate from 4.3.x to 6.0.x",
-          completed: false 
+          completed: true 
         }
       ],
-      statusMessage: "There was some errors while applying the open rewrite recipes.",
-      overallStatus: "error",
+      statusMessage: "All migration steps have been successfully completed.",
+      overallStatus: "completed",
       modules: [
         {
           id: "core-infra",
@@ -62,31 +62,7 @@ export function registerRoutes(app: Express): Server {
               instructions: "Configure security:\n1. Define security group rules\n2. Set up NACL policies\n3. Review network policies"
             },
           ],
-        },
-        {
-          id: "cluster-config",
-          title: "Cluster Configuration",
-          description: "Configure EKS cluster settings and components",
-          currentStep: 0,
-          isCompleted: false,
-          steps: [
-            { 
-              name: "Node Groups", 
-              completed: false,
-              instructions: "Set up node groups:\n1. Define instance types\n2. Configure auto-scaling\n3. Set up node labels"
-            },
-            { 
-              name: "Add-ons", 
-              completed: false,
-              instructions: "Configure add-ons:\n1. Configure CNI plugin\n2. Set up CoreDNS\n3. Install metrics server"
-            },
-            { 
-              name: "Monitoring", 
-              completed: false,
-              instructions: "Configure monitoring:\n1. Set up Prometheus\n2. Configure Grafana\n3. Set up alerts"
-            },
-          ],
-        },
+        }
       ],
     };
 
@@ -110,11 +86,11 @@ export function registerRoutes(app: Express): Server {
         { 
           id: 3, 
           description: "Apply open rewrite recipe (eks-microservices) to migrate from 4.3.x to 6.0.x",
-          completed: false 
+          completed: true 
         }
       ],
-      statusMessage: "There was some errors while applying the open rewrite recipes.",
-      overallStatus: "error",
+      statusMessage: "All migration steps have been successfully completed.",
+      overallStatus: "completed",
       modules: [
         {
           id: "core-infra",
@@ -175,31 +151,7 @@ export function registerRoutes(app: Express): Server {
                 instructions: "Set up backups:\n1. Configure backup policies\n2. Set up retention\n3. Test recovery"
               },
             ],
-          },
-          {
-            id: "data-lifecycle",
-            title: "Data Lifecycle Management",
-            description: "Configure data retention and lifecycle policies",
-            currentStep: 0,
-            isCompleted: false,
-            steps: [
-              { 
-                name: "Retention Policies", 
-                completed: false,
-                instructions: "Set up retention:\n1. Define retention periods\n2. Configure archival rules\n3. Set up cleanup jobs"
-              },
-              { 
-                name: "Backup Schedules", 
-                completed: false,
-                instructions: "Configure backups:\n1. Set up backup schedule\n2. Configure retention periods\n3. Test restore procedures"
-              },
-              { 
-                name: "Monitoring", 
-                completed: false,
-                instructions: "Configure monitoring:\n1. Configure alerts\n2. Set up dashboards\n3. Define SLAs"
-              },
-            ],
-          },
+          }
         ],
       },
       3: {
@@ -227,31 +179,7 @@ export function registerRoutes(app: Express): Server {
                 instructions: "Configure external services:\n1. Set up endpoints\n2. Configure authentication\n3. Set up monitoring"
               },
             ],
-          },
-          {
-            id: "security-integration",
-            title: "Security Integration",
-            description: "Configure security components and policies",
-            currentStep: 0,
-            isCompleted: false,
-            steps: [
-              { 
-                name: "IAM Setup", 
-                completed: false,
-                instructions: "Configure IAM:\n1. Set up roles\n2. Configure policies\n3. Set up service accounts"
-              },
-              { 
-                name: "Security Policies", 
-                completed: false,
-                instructions: "Set up policies:\n1. Configure network policies\n2. Set up RBAC\n3. Configure audit logging"
-              },
-              { 
-                name: "Compliance", 
-                completed: false,
-                instructions: "Configure compliance:\n1. Set up compliance checks\n2. Configure reporting\n3. Set up alerts"
-              },
-            ],
-          },
+          }
         ],
       },
     };
