@@ -2,10 +2,19 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { AlertCircle, ArrowLeft, ArrowRight, CheckCircle2, Check } from "lucide-react";
+import { AlertCircle, ArrowLeft, ArrowRight, Check, Loader2 } from "lucide-react";
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import type { MigrationStepResponse, Module } from "@/lib/api-types";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useForm } from "react-hook-form";
+import { useToast } from "@/hooks/use-toast";
+import type { 
+  MigrationStepResponse, 
+  Module, 
+  BlueprintLayerMigrationRequest,
+  BlueprintLayerMigrationResponse 
+} from "@/lib/api-types";
 import ModuleCard from "@/components/ModuleCard";
 
 const MIGRATION_PHASES = [
@@ -17,26 +26,68 @@ const MIGRATION_PHASES = [
 export default function MigrationWorkflow() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [migrationResponse, setMigrationResponse] = useState<BlueprintLayerMigrationResponse | null>(null);
   const navigate = useNavigate();
+  const { toast } = useToast();
 
-  const { data: stepData } = useQuery<MigrationStepResponse>({
-    queryKey: [`/api/migration/step/${currentStep}`],
+  const form = useForm<BlueprintLayerMigrationRequest>({
+    defaultValues: {
+      repoUrl: "",
+    },
+  });
+
+  const migrationMutation = useMutation({
+    mutationFn: async (data: BlueprintLayerMigrationRequest) => {
+      const response = await fetch(`/api/migration/blueprint/${currentStep}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to start migration");
+      }
+
+      return response.json() as Promise<BlueprintLayerMigrationResponse>;
+    },
+    onSuccess: (data) => {
+      setMigrationResponse(data);
+      toast({
+        title: "Success",
+        description: "Migration process completed successfully",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to start migration",
+        variant: "destructive",
+      });
+    },
   });
 
   const handleNext = () => {
     if (currentStep < 3) {
       setCurrentStep(currentStep + 1);
+      setMigrationResponse(null);
+      form.reset();
     }
   };
 
   const handlePrevious = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
+      setMigrationResponse(null);
+      form.reset();
     }
   };
 
   const handleCancel = () => {
     navigate("/");
+  };
+
+  const onSubmit = (data: BlueprintLayerMigrationRequest) => {
+    migrationMutation.mutate(data);
   };
 
   return (
@@ -94,68 +145,120 @@ export default function MigrationWorkflow() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {/* Migration Steps */}
-              <div className="space-y-4 mb-8">
-                <h2 className="text-lg font-semibold text-gray-900">Migration Steps:</h2>
-                <div className="space-y-3">
-                  {stepData?.steps.map((step) => (
-                    <div 
-                      key={step.id} 
-                      className={`flex items-start gap-3 p-3 rounded-lg border ${
-                        !step.completed && stepData.overallStatus === 'error' 
-                          ? 'bg-red-50 border-red-200' 
-                          : 'bg-white'
-                      }`}
-                    >
-                      <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center ${
-                        step.completed 
-                          ? 'bg-green-500' 
-                          : stepData.overallStatus === 'error'
-                            ? 'bg-red-500'
-                            : 'bg-gray-200'
-                      }`}>
-                        <span className="text-white text-sm">{step.id}</span>
-                      </div>
-                      <p className={`text-gray-700 ${
-                        !step.completed && stepData.overallStatus === 'error' 
-                          ? 'text-red-700' 
-                          : ''
-                      }`}>
-                        {step.description}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                  <FormField
+                    control={form.control}
+                    name="repoUrl"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{`${MIGRATION_PHASES[currentStep - 1].name.split(' ')[0]} Blueprint Layer Repo URL`}</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="Enter repository URL" />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
 
-              {/* Status Message */}
-              {stepData && (
-                <Card className="bg-gray-50 border-none mb-6">
-                  <CardContent className="pt-6">
-                    <div className="flex items-start gap-3">
-                      {stepData.overallStatus === 'completed' ? (
-                        <CheckCircle2 className="h-6 w-6 text-green-500 flex-shrink-0" />
-                      ) : stepData.overallStatus === 'error' ? (
-                        <AlertCircle className="h-6 w-6 text-red-500 flex-shrink-0" />
-                      ) : null}
-                      <p className={`${
-                        stepData.overallStatus === 'error' 
-                          ? 'text-red-700' 
-                          : 'text-gray-700'
-                      }`}>
-                        {stepData.statusMessage}
-                      </p>
+                  <Button 
+                    type="submit" 
+                    disabled={migrationMutation.isPending}
+                    className="w-full bg-cyan-600 hover:bg-cyan-700"
+                  >
+                    {migrationMutation.isPending ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Migrating...
+                      </>
+                    ) : (
+                      'Migrate'
+                    )}
+                  </Button>
+                </form>
+              </Form>
+
+              {/* Migration Response Section */}
+              {migrationResponse && (
+                <div className="mt-8 space-y-6">
+                  {/* Links Section */}
+                  <div className="space-y-4">
+                    <FormItem>
+                      <FormLabel>Sourcegraph Batch Change Link</FormLabel>
+                      <div className="p-2 bg-gray-50 rounded-md border">
+                        {migrationResponse.sourcegraphLink || 'N/A'}
+                      </div>
+                    </FormItem>
+
+                    <FormItem>
+                      <FormLabel>Pull Request</FormLabel>
+                      <div className="p-2 bg-gray-50 rounded-md border">
+                        {migrationResponse.pullRequestLink || 'N/A'}
+                      </div>
+                    </FormItem>
+                  </div>
+
+                  {/* Migration Steps */}
+                  <div className="space-y-4">
+                    <h2 className="text-lg font-semibold text-gray-900">Migration Steps:</h2>
+                    <div className="space-y-3">
+                      {migrationResponse.steps.map((step) => (
+                        <div 
+                          key={step.id} 
+                          className={`flex items-start gap-3 p-3 rounded-lg border ${
+                            !step.completed && migrationResponse.overallStatus === 'error' 
+                              ? 'bg-red-50 border-red-200' 
+                              : 'bg-white'
+                          }`}
+                        >
+                          <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center ${
+                            step.completed 
+                              ? 'bg-green-500' 
+                              : migrationResponse.overallStatus === 'error'
+                                ? 'bg-red-500'
+                                : 'bg-gray-200'
+                          }`}>
+                            <span className="text-white text-sm">{step.id}</span>
+                          </div>
+                          <p className={`text-gray-700 ${
+                            !step.completed && migrationResponse.overallStatus === 'error' 
+                              ? 'text-red-700' 
+                              : ''
+                          }`}>
+                            {step.description}
+                          </p>
+                        </div>
+                      ))}
                     </div>
-                    <div className="mt-4">
-                      <Button
-                        variant="outline"
-                        onClick={() => setIsDialogOpen(true)}
-                      >
-                        {stepData.overallStatus === 'completed' ? 'View Details' : 'Review & Fix'}
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+                  </div>
+
+                  {/* Status Message */}
+                  <Card className="bg-gray-50 border-none">
+                    <CardContent className="pt-6">
+                      <div className="flex items-start gap-3">
+                        {migrationResponse.overallStatus === 'completed' ? (
+                          <CheckCircle2 className="h-6 w-6 text-green-500 flex-shrink-0" />
+                        ) : migrationResponse.overallStatus === 'error' ? (
+                          <AlertCircle className="h-6 w-6 text-red-500 flex-shrink-0" />
+                        ) : null}
+                        <p className={`${
+                          migrationResponse.overallStatus === 'error' 
+                            ? 'text-red-700' 
+                            : 'text-gray-700'
+                        }`}>
+                          {migrationResponse.statusMessage}
+                        </p>
+                      </div>
+                      <div className="mt-4">
+                        <Button
+                          variant="outline"
+                          onClick={() => setIsDialogOpen(true)}
+                        >
+                          View Details
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
               )}
             </CardContent>
           </Card>
@@ -204,7 +307,7 @@ export default function MigrationWorkflow() {
             <DialogTitle>Migration Details</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            {stepData?.modules.map((module) => (
+            {migrationResponse?.modules?.map((module: Module) => (
               <ModuleCard
                 key={module.id}
                 module={module}

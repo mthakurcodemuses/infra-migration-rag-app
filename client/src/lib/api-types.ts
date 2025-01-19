@@ -73,3 +73,15 @@ export interface StepModulesResponse {
     ticketNumber: string;
   };
 }
+
+export interface BlueprintLayerMigrationRequest {
+  repoUrl: string;
+}
+
+export interface BlueprintLayerMigrationResponse {
+  steps: MigrationStep[];
+  statusMessage: string;
+  overallStatus: 'completed' | 'in_progress' | 'error';
+  sourcegraphLink?: string;
+  pullRequestLink?: string;
+}
