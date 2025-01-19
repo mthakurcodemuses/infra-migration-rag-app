@@ -78,12 +78,65 @@ export function registerRoutes(app: Express): Server {
             { 
               name: "Add-ons", 
               completed: false,
-              instructions: "Install add-ons:\n1. Configure CNI plugin\n2. Set up CoreDNS\n3. Install metrics server"
+              instructions: "Configure add-ons:\n1. Configure CNI plugin\n2. Set up CoreDNS\n3. Install metrics server"
             },
             { 
               name: "Monitoring", 
               completed: false,
               instructions: "Configure monitoring:\n1. Set up Prometheus\n2. Configure Grafana\n3. Set up alerts"
+            },
+          ],
+        },
+      ],
+    };
+
+    res.json(response);
+  });
+
+  // Keep the old endpoint for backward compatibility
+  app.post("/api/migration/proceed", (req, res) => {
+    const response: MigrationStepResponse = {
+      steps: [
+        { 
+          id: 1, 
+          description: "Apply open rewrite recipe (eks-microservices) to migrate from 4.1.1 to 4.2.x",
+          completed: true
+        },
+        { 
+          id: 2, 
+          description: "Apply open rewrite recipe (eks-microservices) to migrate from 4.2.x to 4.3.x",
+          completed: true 
+        },
+        { 
+          id: 3, 
+          description: "Apply open rewrite recipe (eks-microservices) to migrate from 4.3.x to 6.0.x",
+          completed: false 
+        }
+      ],
+      statusMessage: "There was some errors while applying the open rewrite recipes.",
+      overallStatus: "error",
+      modules: [
+        {
+          id: "core-infra",
+          title: "Core Infrastructure",
+          description: "Setup and configure core infrastructure components",
+          currentStep: 0,
+          isCompleted: false,
+          steps: [
+            { 
+              name: "VPC Setup", 
+              completed: false,
+              instructions: "Configure VPC settings:\n1. Update CIDR blocks\n2. Configure subnets\n3. Set up routing tables"
+            },
+            { 
+              name: "Network Config", 
+              completed: false,
+              instructions: "Set up networking:\n1. Configure NAT gateways\n2. Set up internet gateways\n3. Configure route tables"
+            },
+            { 
+              name: "Security Groups", 
+              completed: false,
+              instructions: "Configure security:\n1. Define security group rules\n2. Set up NACL policies\n3. Review network policies"
             },
           ],
         },
