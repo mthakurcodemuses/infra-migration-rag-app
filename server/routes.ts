@@ -1,7 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import type { MigrationPlanData, StepModulesResponse } from "../client/src/lib/api-types";
-import { prisma } from './prisma';
+import type { MigrationPlanData, StepModulesResponse, MigrationStepResponse } from "../client/src/lib/api-types";
 
 export function registerRoutes(app: Express): Server {
   app.post("/api/migration/plan", (req, res) => {
@@ -16,14 +15,29 @@ export function registerRoutes(app: Express): Server {
     res.json(migrationPlan);
   });
 
-  app.post("/api/migration/proceed", (req, res) => {
-    // Mock response with initial modules and migration summary
-    const response: StepModulesResponse = {
-      migrationSummary: {
-        sourceVersion: req.body.sourceVersion,
-        targetVersion: req.body.targetVersion,
-        ticketNumber: "MIG-2024-001", // Mock ticket number
-      },
+  app.get("/api/migration/step/:stepId", (req, res) => {
+    const stepId = parseInt(req.params.stepId);
+
+    const response: MigrationStepResponse = {
+      steps: [
+        { 
+          id: 1, 
+          description: "Apply open rewrite recipe (eks-microservices) to migrate from 4.1.1 to 4.2.x",
+          completed: true
+        },
+        { 
+          id: 2, 
+          description: "Apply open rewrite recipe (eks-microservices) to migrate from 4.2.x to 4.3.x",
+          completed: true 
+        },
+        { 
+          id: 3, 
+          description: "Apply open rewrite recipe (eks-microservices) to migrate from 4.3.x to 6.0.x",
+          completed: false 
+        }
+      ],
+      statusMessage: "There was some errors while applying the open rewrite recipes.",
+      overallStatus: "error",
       modules: [
         {
           id: "core-infra",

@@ -31,6 +31,19 @@ export interface StepperData {
   }[];
 }
 
+export interface MigrationStep {
+  id: number;
+  description: string;
+  completed: boolean;
+}
+
+export interface MigrationStepResponse {
+  steps: MigrationStep[];
+  statusMessage: string;
+  overallStatus: 'completed' | 'in_progress' | 'error';
+  modules: Module[];
+}
+
 export const MIGRATION_STEPS = [
   { id: 1, name: 'Base Blueprint Layer Migration', completed: false },
   { id: 2, name: 'Data Blueprint Layer Migration', completed: false },
