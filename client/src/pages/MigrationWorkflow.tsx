@@ -236,7 +236,7 @@ export default function MigrationWorkflow() {
                     <CardContent className="pt-6">
                       <div className="flex items-start gap-3">
                         {migrationResponse.overallStatus === 'completed' ? (
-                          <CheckCircle2 className="h-6 w-6 text-green-500 flex-shrink-0" />
+                          <Check className="h-6 w-6 text-green-500 flex-shrink-0" />
                         ) : migrationResponse.overallStatus === 'error' ? (
                           <AlertCircle className="h-6 w-6 text-red-500 flex-shrink-0" />
                         ) : null}
