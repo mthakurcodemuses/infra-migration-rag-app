@@ -138,7 +138,7 @@ export default function MigrationWorkflow() {
             </div>
           </div>
 
-          <Card className="border-none shadow-lg mb-8">
+          <Card className="border-none shadow-lg">
             <CardHeader>
               <CardTitle className="text-2xl text-cyan-900">
                 {MIGRATION_PHASES[currentStep - 1].name}
@@ -182,19 +182,19 @@ export default function MigrationWorkflow() {
                 <div className="mt-8 space-y-6">
                   {/* Links Section */}
                   <div className="space-y-4">
-                    <FormItem>
-                      <FormLabel>Sourcegraph Batch Change Link</FormLabel>
+                    <div>
+                      <div className="text-sm font-medium mb-1">Sourcegraph Batch Change Link</div>
                       <div className="p-2 bg-gray-50 rounded-md border">
                         {migrationResponse.sourcegraphLink || 'N/A'}
                       </div>
-                    </FormItem>
+                    </div>
 
-                    <FormItem>
-                      <FormLabel>Pull Request</FormLabel>
+                    <div>
+                      <div className="text-sm font-medium mb-1">Pull Request</div>
                       <div className="p-2 bg-gray-50 rounded-md border">
                         {migrationResponse.pullRequestLink || 'N/A'}
                       </div>
-                    </FormItem>
+                    </div>
                   </div>
 
                   {/* Migration Steps */}
